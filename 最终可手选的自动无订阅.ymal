@@ -1,0 +1,230 @@
+port: 7890
+socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
+tproxy-port: 7894
+allow-lan: true
+mode: rule
+log-level: warning
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: 'off'
+global-client-fingerprint: chrome
+
+external-controller: 0.0.0.0:9090
+external-ui: "/etc/nikki/run"
+external-ui-name: zashboard
+external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
+secret: ""
+
+dns:
+  enable: true
+  listen: 0.0.0.0:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - "rule-set:private_domain"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - https://223.5.5.5/dns-query
+  default-nameserver:
+    - 223.5.5.5
+
+proxies:
+  - { name: 直连, type: direct }
+
+proxy-providers:
+  Airport-1:
+    type: http
+    url: "https://example.com/airport-1-sub" # 这里填写订阅：机场 1
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+
+  Airport-2:
+    type: http
+    url: "https://example.com/airport-2-sub" # 这里填写订阅：机场 2
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+
+  Airport-3:
+    type: http
+    url: "https://example.com/airport-3-sub" # 这里填写订阅：机场 3
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+
+  Airport-4:
+    type: http
+    url: "https://example.com/airport-4-sub" # 这里填写订阅：机场 4
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+
+  Airport-5:
+    type: http
+    url: "https://example.com/airport-5-sub" # 这里填写订阅：机场 5
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+
+  Airport-6:
+    type: http
+    url: "https://example.com/airport-6-sub" # 这里填写订阅：机场 6
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+
+  Airport-7:
+    type: http
+    url: "https://example.com/airport-7-sub" # 这里填写订阅：机场 7
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+    proxy: 直连
+
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    use:
+      - Airport-1
+      - Airport-2
+      - Airport-3
+      - Airport-4
+      - Airport-5
+      - Airport-6
+      - Airport-7
+    proxies:
+      - ♻️ 自动选择
+      - 直连
+
+  - name: ♻️ 自动选择
+    type: url-test
+    use:
+      - Airport-1
+      - Airport-2
+      - Airport-3
+      - Airport-4
+      - Airport-5
+      - Airport-6
+      - Airport-7
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+
+  - name: 💧 Copilot
+    type: url-test
+    use:
+      - Airport-1
+      - Airport-2
+      - Airport-3
+      - Airport-4
+      - Airport-5
+      - Airport-6
+      - Airport-7
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 150
+    filter: "(?i)香港|copilot|cn|hk|us|美国"
+
+  - name: 💬 ChatGPT
+    type: url-test
+    use:
+      - Airport-1
+      - Airport-2
+      - Airport-3
+      - Airport-4
+      - Airport-5
+      - Airport-6
+      - Airport-7
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 150
+    filter: "(?i)openai|-gpt|us|tokyo|美国|日本|JP"
+
+  - name: 🎯 全球直连
+    type: select
+    proxies:
+      - 直连
+      - 🚀 节点选择
+      - ♻️ 自动选择
+
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - 🎯 全球直连
+      - ♻️ 自动选择
+
+rule-providers:
+  private_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/private_domain.yaml
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
+    interval: 86400
+
+  Bing:
+    type: http
+    behavior: classical
+    path: ./ruleset/Bing.yaml
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Bing.list
+    interval: 86400
+
+  OpenAi:
+    type: http
+    behavior: classical
+    path: ./ruleset/OpenAi.yaml
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/refs/heads/master/Clash/Ruleset/OpenAi.list
+    interval: 86400
+
+  ChinaDomain:
+    type: http
+    behavior: classical
+    path: ./ruleset/ChinaDomain.yaml
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list
+    interval: 86400
+
+  ChinaCompanyIp:
+    type: http
+    behavior: ipcidr
+    path: ./ruleset/ChinaCompanyIp.yaml
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaCompanyIp.list
+    interval: 86400
+
+rules:
+  - RULE-SET,Bing,💧 Copilot
+  - RULE-SET,OpenAi,💬 ChatGPT
+  - RULE-SET,ChinaDomain,🎯 全球直连
+  - RULE-SET,ChinaCompanyIp,🎯 全球直连
+  - GEOIP,CN,🎯 全球直连
+  - MATCH,🐟 漏网之鱼
